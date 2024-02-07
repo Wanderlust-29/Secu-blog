@@ -9,11 +9,35 @@ class AuthController extends AbstractController
 
     public function checkLogin() : void
     {
-        // si le login est valide => connecter puis rediriger vers la home
-        // $this->redirect("index.php");
+        if(isset($_POST["email"]) && isset($_POST["password"]))
+        {
+            $um = new UserManager();
+            $email = htmlspecialchars($_POST['email']);
+            $password = htmlspecialchars($_POST['password']);
 
-        // sinon rediriger vers login
-        // $this->redirect("index.php?route=login");
+            $user = $um->findByEmail($email);
+
+            if($user->getId() !== null)
+            {
+                if(password_verify($password, $user->getPassword()))
+                {
+                    $_SESSION["user"] = $user;
+                    $this->redirect("index.php");
+                }
+                else
+                {
+                    header("Location: index.php?route=login");
+                }
+            }
+            else
+            {
+                header("Location: index.php?route=login");
+            }
+        }
+        else
+        {
+            header("Location: index.php?route=login");
+        }
     }
 
     public function register() : void
