@@ -37,6 +37,7 @@ class AuthController extends AbstractController
         else
         {
             header("Location: index.php?route=login");
+            exit();
         }
     }
 
@@ -67,6 +68,7 @@ class AuthController extends AbstractController
             else
             {
                    header("Location: index.php?route=register");
+                   exit();
             }
         }
         else
