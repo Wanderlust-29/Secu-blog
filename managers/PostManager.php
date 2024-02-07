@@ -21,6 +21,7 @@ class PostManager extends AbstractManager
 
         return $list;
     }
+    
     public function findOne(int $id) : ?Post
     {
         $query = $this->db->prepare('SELECT * FROM posts WHERE id = :id');
@@ -39,9 +40,29 @@ class PostManager extends AbstractManager
     
         return $item;
     }
+    
     public function findByCategory(int $categoryId): array
     {
+        $query = $this->db->prepare('SELECT post.* FROM posts post
+                                    INNER JOIN posts_categories post_category ON post.id = post_category.post_id
+                                    WHERE post_category.category_id = :categoryId');
+        $parameters = [
+            "categoryId" => $categoryId,
+        ];
+        $query->execute($parameters);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        $list =[];
+        if($result !== false)
+        {
+            foreach($result as $item)
+            {
+                $post = new Post($post["title"], $post["excerpt"], $post["content"], $post["author"], DateTime::createFromFormat('Y-m-d H:i:s', $post["created_at"]));
+                $post->setId($item["id"]);
+                $list[] = $category;
+            }
+        }
         
+        return $list;
     }
 
 }
