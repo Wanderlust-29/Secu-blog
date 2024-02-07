@@ -1,9 +1,9 @@
 <?php
 
-class User {
+class Post {
     private ?int $id = null;
     
-    public function __construct(private string $title, private string $excerpt, private string $content, private int $author, private string $createdAt){
+    public function __construct(private string $title, private string $excerpt, private string $content, private int $author, private DateTime $createdAt){
     }
     //GETTERS
     public function getId(): ?int
@@ -26,7 +26,7 @@ class User {
     {
         return $this->author;
     }
-    public function getCreatedAt() : string
+    public function getCreatedAt() : DateTime
     {
         return $this->createdAt;
     }
@@ -52,7 +52,7 @@ class User {
     {
         $this->author = $author;
     }
-    public function setCreatedAt (string $createAt) : void
+    public function setCreatedAt (DateTime $createAt) : void
     {
         $this->createdAt = $createdAt;
     }
