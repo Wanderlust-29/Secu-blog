@@ -3,7 +3,9 @@
 class Comment {
     private ?int $id = null;
     
-    public function __construct(private string $content, private int $userId, private string $postId){
+    public function __construct(private string $content, private User $user, private Post $post)
+    {
+        
     }
     //GETTERS
     public function getId(): ?int
@@ -14,13 +16,13 @@ class Comment {
     {
         return $this->content;
     }
-    public function getUserId() : int
+    public function getUser(): User
     {
-        return $this->userId;
+        return $this->user;
     }
-    public function getPostId() : int
+    public function getPost(): Post
     {
-        return $this->postId;
+        return $this->post;
     }
 
     //SETTERS
@@ -32,13 +34,13 @@ class Comment {
     {
         $this->content = $content;
     }
-    public function setUserId (string $userId) : User
+    public function setUser(User $user): void
     {
-        $this->userId = $userId;
+        $this->user = $user;
     }
-    public function setPostId (string $postId) : Post
+    public function setPost(Post $post): void
     {
-        $this->postId = $postId;
+        $this->post = $post;
     }
 }
 ?>

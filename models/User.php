@@ -3,7 +3,7 @@
 class User {
     
     private ?int $id = null;
-    public function __construct(private string $username, private string $email, private string $password, private string $role, private DateTime $createdAt){
+    public function __construct(private string $username, private string $email, private string $password,  private string $role = "USER"){
 
     }
         
@@ -28,10 +28,6 @@ class User {
     {
         return $this->role;
     }
-    public function getCreatedAt() : DateTime
-    {
-        return $this->createdAt;
-    }
 
     //SETTERS
     public function setId (int $id) : void
@@ -53,10 +49,6 @@ class User {
     public function setRole (string $role) : void
     {
         $this->role = $role;
-    }
-    public function setCreatedAt (DateTime $createdAt) : void
-    {
-        $this->createdAt = $createdAt;
     }
 }
 ?>

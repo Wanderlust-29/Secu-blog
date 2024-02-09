@@ -1,9 +1,13 @@
 <?php
 
-class Post {
-    private ?int $id = null;
-    
-    public function __construct(private string $title, private string $excerpt, private string $content, private int $author, private DateTime $createdAt){
+class Post
+{
+    private ? int $id = null;
+    private array $categories = [];
+
+    public function __construct(private string $title, private string $excerpt, private string $content, private User $author, private DateTime $createdAt = new DateTime())
+    {
+
     }
     //GETTERS
     public function getId(): ?int
@@ -22,13 +26,17 @@ class Post {
     {
         return $this->content;
     }
-    public function getAuthor() : int
+    public function getAuthor(): User
     {
         return $this->author;
     }
     public function getCreatedAt() : DateTime
     {
         return $this->createdAt;
+    }
+    public function getCategories(): array
+    {
+        return $this->categories;
     }
 
     //SETTERS
@@ -48,13 +56,17 @@ class Post {
     {
         $this->content = $content;
     }
-    public function setAuthor (string $author) : void
+    public function setAuthor(User $author): void
     {
         $this->author = $author;
     }
     public function setCreatedAt (DateTime $createAt) : void
     {
         $this->createdAt = $createdAt;
+    }
+    public function setCategories(array $categories): void
+    {
+        $this->categories = $categories;
     }
 }
 ?>

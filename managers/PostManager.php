@@ -2,67 +2,85 @@
 
 class PostManager extends AbstractManager
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     public function findLatest() : array
-    {   
-        $list = [];
-        $query = $this->db->prepare('SELECT * FROM posts ORDER BY created_at DESC LIMIT 4');
+    {
+        $um = new UserManager();
+        $cm = new CategoryManager();
+
+        $query = $this->db->prepare('SELECT * FROM posts ORDER BY created_at LIMIT 4');
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
-        
-         if($result !== false)
+        $posts = [];
+
+        foreach($result as $item)
         {
-            foreach($result as $item)
-            {
-                $post = new Post($post["title"], $post["excerpt"], $post["content"], $post["author"], DateTime::createFromFormat('Y-m-d H:i:s', $post["created_at"]));
-                $post->setId($item["id"]);
-                $list[] = $category;
-            }
+            $categories = $cm->findByPost($item["id"]);
+            $user = $um->findOne($item["author"]);
+            $post = new Post($item["title"], $item["excerpt"], $item["content"], $user, DateTime::createFromFormat('Y-m-d H:i:s', $item["created_at"]));
+            $post->setId($item["id"]);
+            $post->setCategories($categories);
+            $posts[] = $post;
         }
 
-        return $list;
+        return $posts;
     }
-    
-    public function findOne(int $id) : ?Post
+
+    public function findOne(int $id) : ? Post
     {
-        $query = $this->db->prepare('SELECT * FROM posts WHERE id = :id');
+        $um = new UserManager();
+        $cm = new CategoryManager();
+
+        $query = $this->db->prepare('SELECT * FROM posts WHERE id=:id');
+
         $parameters = [
-            "id" => $id,
+            "id" => $id
         ];
+
         $query->execute($parameters);
-        $post = $query->fetch(PDO::FETCH_ASSOC);
-    
-        if ($post !== false) {
-            $item = new Post($post["title"], $post["excerpt"], $post["content"], $post["author"], DateTime::createFromFormat('Y-m-d H:i:s', $post["created_at"]));
-            $item->setId($post["id"]);
-        } else {
-            $item = new User("", "", "", "", new DateTime());
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        if($result)
+        {
+            $categories = $cm->findByPost($result["id"]);
+            $user = $um->findOne($result["author"]);
+            $post = new Post($result["title"], $result["excerpt"], $result["content"], $user, DateTime::createFromFormat('Y-m-d H:i:s', $result["created_at"]));
+            $post->setId($result["id"]);
+            $post->setCategories($categories);
+
+            return $post;
         }
-    
-        return $item;
+
+        return null;
     }
-    
-    public function findByCategory(int $categoryId): array
+
+    public function findByCategory(int $categoryId) : array
     {
-        $query = $this->db->prepare('SELECT post.* FROM posts post
-                                    INNER JOIN posts_categories post_category ON post.id = post_category.post_id
-                                    WHERE post_category.category_id = :categoryId');
+        $um = new UserManager();
+        $cm = new CategoryManager();
+
+        $query = $this->db->prepare('SELECT posts.* FROM posts JOIN posts_categories ON posts_categories.post_id=posts.id WHERE posts_categories.category_id=:category_id');
         $parameters = [
-            "categoryId" => $categoryId,
+            "category_id" => $categoryId
         ];
         $query->execute($parameters);
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
-        $list =[];
-        if($result !== false)
-        {
-            foreach($result as $item)
-            {
-                $post = new Post($post["title"], $post["excerpt"], $post["content"], $post["author"], DateTime::createFromFormat('Y-m-d H:i:s', $post["created_at"]));
-                $post->setId($item["id"]);
-                $list[] = $category;
-            }
-        }
-        
-        return $list;
-    }
+        $posts = [];
 
+        foreach($result as $item)
+        {
+            $categories = $cm->findByPost($item["id"]);
+            $user = $um->findOne($item["author"]);
+            $post = new Post($item["title"], $item["excerpt"], $item["content"], $user, DateTime::createFromFormat('Y-m-d H:i:s', $item["created_at"]));
+            $post->setId($item["id"]);
+            $post->setCategories($categories);
+            $posts[] = $post;
+        }
+
+        return $posts;
+    }
 }

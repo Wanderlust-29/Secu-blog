@@ -1,27 +1,54 @@
 <?php
 
 class UserManager extends AbstractManager {
-
-    public function findByEmail(string $email) : User
+    
+    public function __construct()
     {
-        $query = $this->db->prepare('SELECT * FROM users WHERE email = :email');
+        parent::__construct();
+    }
+
+    public function findByEmail(string $email) : ? User
+    {
+        $query = $this->db->prepare('SELECT * FROM users WHERE email=:email');
+
         $parameters = [
-            "email" => $email,
+            "email" => $email
         ];
+
         $query->execute($parameters);
-        $user = $query->fetch(PDO::FETCH_ASSOC);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
 
-        if($user !== null)
+        if($result)
         {
-            $item = new User($user["username"], $user["email"], $user["password"], $user["role"], DateTime::createFromFormat('Y-m-d H:i:s', $user["created_at"]));
-            $item->setId($user["id"]);
-        }
-        else
-        {
-            $item = new User("", "", "", "", new DateTime());
+            $user = new User($result["username"], $result["email"], $result["password"], $result["role"]);
+            $user->setId($result["id"]);
+
+            return $user;
         }
 
-        return $item;
+        return null;
+    }
+    
+    public function findOne(int $id) : ? User
+    {
+        $query = $this->db->prepare('SELECT * FROM users WHERE id=:id');
+
+        $parameters = [
+            "id" => $id
+        ];
+
+        $query->execute($parameters);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        if($result)
+        {
+            $user = new User($result["username"], $result["email"], $result["password"], $result["role"]);
+            $user->setId($result["id"]);
+
+            return $user;
+        }
+
+        return null;
     }
     
     public function create(User $user) : void
